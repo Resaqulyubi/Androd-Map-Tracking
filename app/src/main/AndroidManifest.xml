@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="travel.maptracking">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <application
+        android:hardwareAccelerated="true"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.here.android.maps.appid"
+            android:value="Jx19V6RquZQ5OETiixce" />
+        <meta-data
+            android:name="com.here.android.maps.apptoken"
+            android:value="q9g49SJoUosXfxsSAHc7gA" />
+        <meta-data
+            android:name="com.here.android.maps.license.key"
+            android:value="jHDo910g4fYvbRJ0M+YH04+liFEQhcgWgYiB6I4vo9SXHrYAcyRkv6r2YIMWYPbWu3o4M8z1PLTc5KnpnHupdUIR3MgVBkxNB+uudtgq3DhdDHNAKXUZPCV1NEK7aH5qltrLIWQWna2CXh2ay7cDkDKIOAVmbIrxMasQrowWGEHGHOGzABijo3nSovPh/rejHxBrNF6Wdqo8BxQd89luNrj2XeR9zDET2Z1rqLXZP6vlzDuLSRKpv8Tjci2trAuZDhZ+jUMaEKcG+5E+JsO4Qq3ZVnmp4hazFMThgdhu5LTH/8u711PZuOTGzcMEDWRlT2NXnt9jaJ1JwxixdSuXLVondLEWsJky3AHBESPDuzW2VEBiHyGF9ui36Mj08Vi/Iu3Q95sjpOWZLzUXOXcLxaTJlToGrugT0W0MLjyRRSox1uUcSX+W4wIU4kN1Q67p4HTlnUtNRWDotbm63/riERQqWOf4l4APi/O7b/ckI7Va7BNfgw19rotJFe99A3ZzlyfCLkepQQKKGIQjg7iD+g2PYrD4OTfkFOoqrJl7fzzyr7JOhNAktCeYn4g5DTStHsIIrc8VVTXGoneIH9bRFArJXTTWuevR15jvq+x8ZG+Dul3jLXD6HSp/2madCQeV3kJPYEvB78oYUv0rz0nbZJE/z/KP7zulZkr8wII/I1c=" />
+
+        <service android:name="com.here.android.mpa.service.MapService"
+            android:label="MapTracking"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="map_intent">
+            </action>
+            </intent-filter>
+        </service>
+
+    </application>
+
+
+
+</manifest>
