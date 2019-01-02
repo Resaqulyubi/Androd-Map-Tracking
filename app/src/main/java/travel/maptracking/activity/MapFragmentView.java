@@ -127,8 +127,10 @@ public class MapFragmentView {
 //        testPoints.add(new GeoCoordinate(-7.940565, 112.621606, 0.0));
 //        testPoints.add(new GeoCoordinate(-7.938418, 112.618559, 0.0));
 //        testPoints.add(new GeoCoordinate(-7.938106, 112.618790, 0.0));
-         GeoPolyline polyline = new GeoPolyline(testPoints);
-         m_polyline = new MapPolyline(polyline);
+
+        if (testPoints.size()>0){
+            GeoPolyline polyline = new GeoPolyline(testPoints);
+            m_polyline = new MapPolyline(polyline);
 
 //        // create boundingBox centered at current location
 //        GeoBoundingBox boundingBox = new GeoBoundingBox(m_map.getCenter(), 1000, 1000);
@@ -140,10 +142,12 @@ public class MapFragmentView {
 //        GeoPolyline geoPolyline = new GeoPolyline(coordinates);
 //        m_polyline = new MapPolyline(geoPolyline);
 
-        m_polyline.setLineColor(Color.BLUE);
-        m_polyline.setLineWidth(11);
-        // add GeoPolyline to current active map
-        m_map.addMapObject(m_polyline);
+            m_polyline.setLineColor(Color.BLUE);
+            m_polyline.setLineWidth(11);
+            // add GeoPolyline to current active map
+            m_map.addMapObject(m_polyline);
+        }
+
     }
 
     private void getDataRoute(){

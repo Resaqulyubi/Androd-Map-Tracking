@@ -85,12 +85,7 @@ public class TrackingDriverActivity extends BaseAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking_driver);
 
-        if (hasPermissions(this, RUNTIME_PERMISSIONS)) {
-            setupMapFragmentView();
-        } else {
-            ActivityCompat
-                    .requestPermissions(this, RUNTIME_PERMISSIONS, REQUEST_CODE_ASK_PERMISSIONS);
-        }
+
 
         TextView tv_id_driver =findViewById(R.id.tv_id_driver);
         TextView tv_driver_name =findViewById(R.id.tv_driver_name);
@@ -205,6 +200,13 @@ public class TrackingDriverActivity extends BaseAppCompatActivity {
 
                     if (scheduleRoute.isStatus() && scheduleRoute.getData().size() > 0) {
                         dataScheduleRoute = scheduleRoute.getData();
+
+                        if (hasPermissions(TrackingDriverActivity.this, RUNTIME_PERMISSIONS)) {
+                            setupMapFragmentView();
+                        } else {
+                            ActivityCompat
+                                    .requestPermissions(TrackingDriverActivity.this, RUNTIME_PERMISSIONS, REQUEST_CODE_ASK_PERMISSIONS);
+                        }
                     }else {
                         obj.runOnUiThread(new Runnable() {
                             public void run() {

@@ -168,12 +168,16 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         }
 
         btn_tracking.setOnClickListener(view -> {
-            Gson gson1 = new Gson();
-            String jsonDriver = gson1.toJson(dataDriver);
-            Intent i = new Intent(this, TrackingDriverActivity.class)
-                    .putExtra("jsonSchedule",getIntent().getStringExtra("json"))
-                    .putExtra("jsonDriver",jsonDriver);
-            startActivity(i);
+            if (!dataDriver.getNama().isEmpty()){
+                Gson gson1 = new Gson();
+                String jsonDriver = gson1.toJson(dataDriver);
+                Intent i = new Intent(this, TrackingDriverActivity.class)
+                        .putExtra("jsonSchedule",getIntent().getStringExtra("json"))
+                        .putExtra("jsonDriver",jsonDriver);
+                startActivity(i);
+            }else {
+                Toast.makeText(obj, "Data Driver gagal di unduh silahkan refresh ulang", Toast.LENGTH_SHORT).show();
+            }
         });
 
         getRecordUser(dataSchedule.getId_driver());
