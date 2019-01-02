@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.ScheduleAddActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <TextView
+        android:id="@+id/tv_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="Add Schedule"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/tv_subtitle_size"
+        android:padding="5dp"
+
+        ></TextView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:fillViewport="true"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="DATA CUSTOMER"/>
+
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="ID Pemesanan"
+                app:met_floatingLabel="highlight"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:id="@+id/tv_id_pemesanan"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="ID Customer"
+                app:met_floatingLabel="highlight"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:id="@+id/tv_customer_id"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Customer Name"
+                app:met_floatingLabel="highlight"
+                android:id="@+id/tv_customer_name"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"/>
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Email"
+                app:met_floatingLabel="highlight"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:id="@+id/tv_customer_email"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Phone"
+                android:inputType="number"
+                app:met_floatingLabel="highlight"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:id="@+id/tv_customer_phone"
+                android:layout_height="wrap_content" />
+
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Address"
+                app:met_floatingLabel="highlight"
+                android:id="@+id/tv_customer_address"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Payment Code"
+                app:met_floatingLabel="highlight"
+                android:id="@+id/tv_customer_payment_code"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:hint="Paket"
+                app:met_floatingLabel="highlight"
+                android:id="@+id/tv_customer_paket"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SCHEDULE"/>
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Pick Up Point"
+                app:met_floatingLabel="highlight"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:id="@+id/tv_schedule_pick_poin"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Pick Up time"
+                app:met_floatingLabel="highlight"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:id="@+id/tv_schedule_pick_time"
+                android:layout_height="wrap_content" />
+
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Destination"
+                app:met_floatingLabel="highlight"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:id="@+id/tv_schedule_destination"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Route"
+                app:met_floatingLabel="highlight"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:id="@+id/tv_schedule_rooute"
+                android:layout_height="wrap_content" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:hint="Arrival"
+                app:met_floatingLabel="highlight"
+                android:layout_marginTop="@dimen/marginTopScheduleForm"
+                android:id="@+id/tv_schedule_arrival"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="NEXT"
+                android:background="@color/colorBlue3"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

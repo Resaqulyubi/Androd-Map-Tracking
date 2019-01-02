@@ -14,8 +14,26 @@
             android:text="addpolyline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_get_location"
+            android:text="getlocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
+    <!-- Text field containing locaiton information -->
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#40000000">
 
+        <TextView
+            android:id="@+id/textViewLocationInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Large"
+            android:text="Waiting for position fix.."
+            android:padding="3dp"/>
+    </RelativeLayout>
 
     <!-- Map Fragment embedded with the map object -->
     <fragment
