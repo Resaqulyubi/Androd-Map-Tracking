@@ -30,11 +30,13 @@ import travel.maptracking.model.schedule;
 import travel.maptracking.network.Api;
 import travel.maptracking.util.BaseAppCompatActivity;
 import travel.maptracking.util.Constant;
+import travel.maptracking.util.Util;
 
 public class ScheduleActivity extends BaseAppCompatActivity {
     private android.support.v7.widget.Toolbar toolbar;
     private ScheduleActivity obj;
     private AdapterSchedule adapter;
+    private String hakAkses="";
     @Override
     protected int getLayoutResource() {
         return 0;
@@ -70,6 +72,8 @@ public class ScheduleActivity extends BaseAppCompatActivity {
         obj = ScheduleActivity.this;
 
 
+        hakAkses= getIntent().getStringExtra("akses");
+
 
         adapter=new AdapterSchedule(this, position -> {
 
@@ -100,7 +104,9 @@ public class ScheduleActivity extends BaseAppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.add, menu);
+        if (hakAkses.equals("admin")){
+            inflater.inflate(R.menu.add, menu);
+        }
 
 
         return true;
@@ -157,11 +163,15 @@ public class ScheduleActivity extends BaseAppCompatActivity {
 
                 HttpUrl.Builder httpUrlBuilder = new HttpUrl.Builder();
 
+                if (hakAkses.equals("driver")){
+                    httpUrlBuilder.addQueryParameter("id_driver",Util.getSharedPreferenceString(ScheduleActivity.this, Constant.PREFS_IS_USER_ID,""));
+                }
+
                 SimpleDateFormat ft = new SimpleDateFormat (Constant.default_simpledate2);
 
 
                 try (Response response = new Api(ScheduleActivity.this).
-                        get(getString(R.string.api_schedule))) {
+                        get(getString(R.string.api_schedule),httpUrlBuilder)) {
                     if (response == null || !response.isSuccessful())
                         throw new IOException("Unexpected code = " + response);
 

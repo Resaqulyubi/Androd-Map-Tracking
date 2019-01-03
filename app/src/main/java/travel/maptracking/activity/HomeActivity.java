@@ -29,7 +29,7 @@ public class HomeActivity extends AppCompatActivity {
         card_admin_schedule=findViewById(R.id.card_admin_schedule);
         card_driver_schedule=findViewById(R.id.card_driver_schedule);
 
-       if (getIntent().getIntExtra("kategori",0)==1){
+       if (Util.getSharedPreferenceString(this, Constant.PREFS_IS_USER_AKSES,"").equals("driver")){
            grid_admin.setVisibility(View.GONE);
            grid_driver.setVisibility(View.VISIBLE);
 
@@ -41,12 +41,15 @@ public class HomeActivity extends AppCompatActivity {
 
 
         card_admin_schedule.setOnClickListener(View ->{
-            Intent i = new Intent(HomeActivity.this, ScheduleActivity.class);
+            Intent i = new Intent(HomeActivity.this, ScheduleActivity.class)
+                    .putExtra("akses","admin");
             startActivity(i);
         });
 
         card_driver_schedule.setOnClickListener(view -> {
-
+            Intent i = new Intent(HomeActivity.this, ScheduleActivity.class)
+                    .putExtra("akses","driver");
+            startActivity(i);
         });
 
     }

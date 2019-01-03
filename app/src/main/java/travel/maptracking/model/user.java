@@ -51,6 +51,16 @@ public class user {
         private String phone="";
         private String police_number="";
         private String username="";
+        private String office="";
+
+
+        public String getOffice() {
+            return office;
+        }
+
+        public void setOffice(String office) {
+            this.office = office;
+        }
 
 
         public String getCar() {

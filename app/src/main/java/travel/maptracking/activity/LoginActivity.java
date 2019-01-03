@@ -144,6 +144,7 @@ public class LoginActivity extends AppCompatActivity {
                                             .putExtra("kategori",sp_login.getSelectedItemPosition()));
                                     Util.setSharedPreference(LoginActivity.this,Constant.PREFS_IS_LOGIN,true);
                                     Util.setSharedPreference(LoginActivity.this,Constant.PREFS_IS_USER_ID,iduser);
+                                    Util.setSharedPreference(LoginActivity.this,Constant.PREFS_IS_USER_AKSES,sp_login.getSelectedItemPosition()==0?"admin":"driver");
                                     finish();
                                 }
                             });

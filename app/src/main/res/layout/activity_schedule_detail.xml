@@ -289,6 +289,12 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lnly_driver_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -385,15 +391,137 @@
 
             </LinearLayout>
 
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TRACKING"
+                    android:id="@+id/btn_tracking"
+                    android:textColor="@android:color/white"
+                    android:background="@color/colorGreen"
+                    />
+            </LinearLayout>
 
-            <Button
+
+            <LinearLayout
+                android:id="@+id/lnly_admin_detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TRACKING"
-                android:id="@+id/btn_tracking"
-                android:textColor="@android:color/white"
-                android:background="@color/colorGreen"
-                />
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Admin Details"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="4dp"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="0.8"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ID"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Name"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Email"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Phone"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Office"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1.2"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tv_admin_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                        <TextView
+                            android:id="@+id/tv_admin_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+
+                        <TextView
+                            android:id="@+id/tv_admin_email"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+
+                        <TextView
+                            android:id="@+id/tv_admin_phone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+
+                        <TextView
+                            android:id="@+id/tv_admin_office"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <Button
+                    android:layout_marginTop="7dp"
+                    android:id="@+id/btn_call"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="CALL"
+                    android:textColor="@android:color/white"
+                    android:background="@color/colorGreen"
+                    />
+
+                <Button
+                    android:layout_marginTop="6dp"
+                    android:id="@+id/btn_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MESSAGE"
+                    android:textColor="@android:color/white"
+                    android:background="@color/colorBlue3"
+                    />
+
+
+            </LinearLayout>
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -406,6 +534,11 @@
                     />
             </LinearLayout>
 
+            <LinearLayout
+            android:id="@+id/lnly_admin_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -475,6 +608,66 @@
             </LinearLayout>
 
 
+        </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnly_driver_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:orientation="horizontal"
+                    android:padding="4dp"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="0.8"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_marginRight="7dp"
+                            android:layout_height="wrap_content"
+                            android:text="Your Status"/>
+
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1.2"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <Spinner
+                            android:id="@+id/sp_status"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/blue_white_rounded">
+
+                        </Spinner>
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <Button
+                    android:layout_marginTop="9dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="SUBMIT"
+                    android:id="@+id/btn_driver_status_submit"
+                    android:textColor="@android:color/white"
+                    android:background="@color/colorGreen"
+                    />
+            </LinearLayout>
 
         </LinearLayout>
 

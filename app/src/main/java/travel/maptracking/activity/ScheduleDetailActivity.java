@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,18 +13,26 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Response;
 import travel.maptracking.R;
@@ -32,14 +41,17 @@ import travel.maptracking.model.user;
 import travel.maptracking.network.Api;
 import travel.maptracking.util.BaseAppCompatActivity;
 import travel.maptracking.util.Constant;
+import travel.maptracking.util.Util;
 
 public class ScheduleDetailActivity extends BaseAppCompatActivity {
     private android.support.v7.widget.Toolbar toolbar;
     private ScheduleDetailActivity obj;
     TextView tv_driver_id,tv_driver_name,tv_driver_phone,tv_driver_email,tv_driver_car,tv_driver_police_number;
+    TextView tv_admin_id,tv_admin_name,tv_admin_email,tv_admin_phone,tv_admin_office;
+    Spinner sp_status;
     user.Data dataDriver =new user().getDataItem();
     schedule.Data dataSchedule;
-
+    String hakAkses="";
     //map
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
     private static final String[] RUNTIME_PERMISSIONS = {
@@ -76,6 +88,7 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_detail);
 
+        hakAkses=  Util.getSharedPreferenceString(this, Constant.PREFS_IS_USER_AKSES,"");
 
         if (hasPermissions(this, RUNTIME_PERMISSIONS)) {
             setupMapFragmentView();
@@ -94,6 +107,24 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         TextView tv_paket =findViewById(R.id.tv_paket);
         TextView tv_payment =findViewById(R.id.tv_payment);
 
+         sp_status =findViewById(R.id.sp_status);
+
+        String[] arraySpinner = new String[]{"Waiting", "On The Way","Problem", "Arrive","Back to Base"};
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, arraySpinner);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sp_status.setAdapter(arrayAdapter);
+
+
+
+        Button btn_call =findViewById(R.id.btn_call);
+        Button btn_message =findViewById(R.id.btn_message);
+
+        LinearLayout lnly_driver_detail =findViewById(R.id.lnly_driver_detail);
+        LinearLayout lnly_admin_detail =findViewById(R.id.lnly_admin_detail);
+        LinearLayout lnly_admin_status =findViewById(R.id.lnly_admin_status);
+        LinearLayout lnly_driver_status =findViewById(R.id.lnly_driver_status);
+
         TextView tv_pickup_time =findViewById(R.id.tv_pickup_time);
         TextView tv_pickup_point =findViewById(R.id.tv_pickup_point);
         TextView tv_arrival =findViewById(R.id.tv_arrival);
@@ -105,6 +136,26 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         tv_driver_email =findViewById(R.id.tv_driver_email);
         tv_driver_car =findViewById(R.id.tv_driver_car);
         tv_driver_police_number =findViewById(R.id.tv_driver_police_number);
+
+        tv_admin_id =findViewById(R.id.tv_admin_id);
+        tv_admin_name =findViewById(R.id.tv_admin_name);
+        tv_admin_email =findViewById(R.id.tv_admin_email);
+        tv_admin_office =findViewById(R.id.tv_admin_office);
+        tv_admin_phone =findViewById(R.id.tv_admin_phone);
+
+
+        if (hakAkses.equals("admin")){
+            lnly_driver_detail.setVisibility(View.VISIBLE);
+            lnly_admin_status.setVisibility(View.VISIBLE);
+            lnly_admin_detail.setVisibility(View.GONE);
+            lnly_driver_status.setVisibility(View.GONE);
+        }else {
+            lnly_driver_detail.setVisibility(View.GONE);
+            lnly_admin_status.setVisibility(View.GONE);
+            lnly_admin_detail.setVisibility(View.VISIBLE);
+            lnly_driver_status.setVisibility(View.VISIBLE);
+        }
+
 
         RadioButton rdb_waiting =findViewById(R.id.rdb_waiting);
         RadioButton rdb_otw =findViewById(R.id.rdb_otw);
@@ -180,7 +231,38 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
             }
         });
 
-        getRecordUser(dataSchedule.getId_driver());
+        btn_message.setOnClickListener(view -> {
+            if (!dataDriver.getNama().isEmpty()){
+                String phone =dataDriver.getPhone();
+                Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
+                smsIntent.setType("vnd.android-dir/mms-sms");
+                smsIntent.putExtra("address", phone);
+                smsIntent.putExtra("sms_body", "");
+                this.startActivity(Intent.createChooser(smsIntent, "SMS:"));
+            }else {
+                Toast.makeText(obj, "Data Admin gagal di unduh silahkan refresh ulang", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btn_call.setOnClickListener(view -> {
+            if (!dataDriver.getNama().isEmpty()){
+                String phone =dataDriver.getPhone();
+                Intent call = new Intent(Intent.ACTION_DIAL);
+                call.setData( Uri.parse("tel:" + phone));
+                startActivity(call);
+            }else {
+                Toast.makeText(obj, "Data Admin gagal di unduh silahkan refresh ulang", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+        if (hakAkses.equals("admin")){
+            getRecordUser(dataSchedule.getId_driver());
+        }else {
+            getRecordUser(dataSchedule.getCreateby());
+        }
+
 
 
     }
@@ -195,8 +277,11 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            getRecordUser(dataSchedule.getId_driver());
-
+            if (hakAkses.equals("admin")){
+                getRecordUser(dataSchedule.getId_driver());
+            }else {
+                getRecordUser(dataSchedule.getCreateby());
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -250,11 +335,20 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
                         obj.runOnUiThread(new Runnable() {
 
                             public void run() {
-                                tv_driver_name.setText(user.getData().get(0).getNama());
-                                tv_driver_phone.setText(user.getData().get(0).getPhone());
-                                tv_driver_email.setText(user.getData().get(0).getEmail());
-                                tv_driver_car.setText(user.getData().get(0).getCar());
-                                tv_driver_police_number.setText(user.getData().get(0).getPolice_number());
+                                if (hakAkses.equals("admin")){
+                                    tv_driver_name.setText(user.getData().get(0).getNama());
+                                    tv_driver_phone.setText(user.getData().get(0).getPhone());
+                                    tv_driver_email.setText(user.getData().get(0).getEmail());
+                                    tv_driver_car.setText(user.getData().get(0).getCar());
+                                    tv_driver_police_number.setText(user.getData().get(0).getPolice_number());
+                                }else {
+                                    tv_admin_id.setText(user.getData().get(0).getId());
+                                    tv_admin_name .setText(user.getData().get(0).getNama());
+                                    tv_admin_email.setText(user.getData().get(0).getEmail());
+                                    tv_admin_office.setText(user.getData().get(0).getOffice());
+                                    tv_admin_phone.setText(user.getData().get(0).getPhone());
+
+                                }
                             }
                         });
                     }else {
@@ -347,4 +441,107 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         // the HERE SDK requires all permissions defined above to operate properly.
         m_mapFragmentView = new MapFragmentView(this,"scheduledetail");
     }
+
+
+
+    public boolean updateStatus(String id,String username, String nama, String email, String notelp) {
+
+        boolean[] a = {false};
+        new AsyncTask<Void, Void, Boolean>() {
+
+            ProgressDialog dialog =new ProgressDialog(ScheduleDetailActivity.this);
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                dialog.setMessage("Loading Update data...");
+
+                obj.runOnUiThread(new Runnable() {
+                    public void run() {
+                        dialog.show();
+                    }
+                });
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                boolean b=false;
+
+                FormBody.Builder formBody = new FormBody.Builder()
+                        .add("id_user", id.trim())
+                        .add("username", username)
+                        .add("email", email)
+                        .add("nama", nama)
+                        .add("no_telp", notelp);
+
+                try (Response response = new Api(ScheduleDetailActivity.this).
+                        post(getString(R.string.api_schedule),formBody)) {
+
+                    if (response == null || !response.isSuccessful())
+                        throw new IOException("Unexpected code = " + response);
+
+                    String responseBodyString = response.body().string();
+                    JSONObject responseBodyObject = new JSONObject(responseBodyString);
+                    if (responseBodyObject.getBoolean("status")) {
+
+                        obj.runOnUiThread(new Runnable() {
+
+                            public void run() {
+                                Toast.makeText(obj, "Berhasil diupdate", Toast.LENGTH_SHORT).show();
+//                                getRecord();
+                                if (dialog!=null&dialog.isShowing()){
+                                    dialog.dismiss();
+                                }
+                            }
+                        });
+                    }else {
+                        obj.runOnUiThread(new Runnable() {
+                            public void run() {
+                                if (responseBodyObject.has("message")){
+                                    String message="";
+                                    try {
+                                        message=responseBodyObject.getString("message");
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Toast.makeText(obj, message, Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(obj, "Error Respon false", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    obj.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(obj, "Terjadi Respon error server", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return  b;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aVoid) {
+                super.onPostExecute(aVoid);
+                obj.runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (dialog!=null&dialog.isShowing()){
+                            dialog.dismiss();
+                        }
+                    }
+                });
+
+
+            }
+        }.execute();
+
+
+        return  a[0];
+
+    }
+
 }

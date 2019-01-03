@@ -8,7 +8,9 @@
     tools:context=".activity.HomeActivity">
 
 
+
     <TextView
+        android:layout_marginTop="20dp"
         android:layout_marginLeft="10dp"
         android:textSize="30dp"
         android:layout_width="match_parent"
@@ -53,27 +55,29 @@
                 >
 
                 <LinearLayout
-                    android:layout_gravity="center_horizontal|center_vertical"
                     android:layout_margin="16dp"
-                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:orientation="horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:layout_gravity="center_horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
                     <TextView
-                        android:text="Monitoring Schedule"
+                        android:text="Monitoring \nSchedule"
 
-                        android:textAlignment="center"
                         android:textColor="@color/blueRound"
-                        android:textSize="18sp"
+                        android:textSize="29sp"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
+
+                    <ImageView
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_insert_chart_black_24dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="66dp"
+                        android:layout_height="66dp" />
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
@@ -105,27 +109,29 @@
                 >
 
                 <LinearLayout
-                    android:layout_gravity="center_horizontal|center_vertical"
                     android:layout_margin="16dp"
-                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:orientation="horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <ImageView
-
-                        android:layout_gravity="center_horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
 
                     <TextView
-                        android:text="Tracking your Driver"
-                        android:textAlignment="center"
+                        android:text="Tracking \nyour Driver"
+
                         android:textColor="@color/blueRound"
-                        android:textSize="18sp"
+                        android:textSize="29sp"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
+                    <ImageView
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_collections_bookmark_black_24dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="66dp"
+                        android:layout_height="66dp" />
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
@@ -177,26 +183,30 @@
                 >
 
                 <LinearLayout
-                    android:layout_gravity="center_horizontal|center_vertical"
+
                     android:layout_margin="16dp"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <ImageView
-
-                        android:layout_gravity="center_horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
 
                     <TextView
-                        android:text="View Schedule"
-                        android:textAlignment="center"
+                        android:text="View \nSchedule"
                         android:textColor="@color/blueRound"
-                        android:textSize="18sp"
+                        android:textSize="29sp"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
+
+                    <ImageView
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_insert_chart_black_24dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="66dp"
+                        android:layout_height="66dp" />
+
 
                 </LinearLayout>
 

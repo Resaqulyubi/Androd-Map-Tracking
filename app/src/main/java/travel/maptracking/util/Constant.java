@@ -10,6 +10,7 @@ public interface Constant {
     String default_simpledate2= "yyyy-MM-dd";
     String PREFS_IS_LOGIN="PREFS_IS_LOGIN";
     String PREFS_IS_USER_ID="PREFS_IS_USER_ID";
+    String PREFS_IS_USER_AKSES="PREFS_IS_USER_AKSES";
     String PREFS_IS_USER_NAME="PREFS_IS_USER_NAME";
     String PREFS_IS_USER_LEVEL="PREFS_IS_USER_LEVEL";
     String PREFS_IS_USER_TOKEN="PREFS_IS_TOKEN";
