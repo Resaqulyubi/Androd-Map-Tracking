@@ -65,10 +65,11 @@ public class MapFragmentView {
                         if (dataRoute.size()>0){
                             if (Util.parseDouble(dataRoute.get(0).getLat())!=0&&Util.parseDouble(dataRoute.get(0).getLongi())!=0){
                                 m_map.setCenter(new GeoCoordinate(Util.parseDouble(dataRoute.get(0).getLat()),  Util.parseDouble(dataRoute.get(0).getLongi()), 0.0), Map.Animation.BOW);      // Set the zoom level to the average between min and max
+                                m_map.setZoomLevel((m_map.getMaxZoomLevel() + m_map.getMinZoomLevel()) / 1);
+                                initCreatePolylineButton();
                             }
                         }
-                        m_map.setZoomLevel((m_map.getMaxZoomLevel() + m_map.getMinZoomLevel()) / 1.1);
-                        initCreatePolylineButton();
+
                     } else {
                         System.out.println("ERROR: Cannot initialize Map Fragment");     }    }   });  }
 
@@ -128,7 +129,7 @@ public class MapFragmentView {
 //        testPoints.add(new GeoCoordinate(-7.938418, 112.618559, 0.0));
 //        testPoints.add(new GeoCoordinate(-7.938106, 112.618790, 0.0));
 
-        if (testPoints.size()>0){
+        if (testPoints.size()>1){
             GeoPolyline polyline = new GeoPolyline(testPoints);
             m_polyline = new MapPolyline(polyline);
 

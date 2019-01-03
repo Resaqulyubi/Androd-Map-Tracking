@@ -189,8 +189,6 @@ public class Util {
             value = "0";
         } else if (value.contains(",")){
             value = value.replace(",", ".");
-        } else if (Double.parseDouble(value) < 0) {
-            value = "0";
         } else if (value.equalsIgnoreCase("nan")) {
             value = "0";
         }
