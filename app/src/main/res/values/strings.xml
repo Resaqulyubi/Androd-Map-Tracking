@@ -3,8 +3,8 @@
     <string name="api_user">user_api</string>
     <string name="api_schedule">schedule_api</string>
     <string name="api_schedule_route">schedule_route_api</string>
-    <string name="api_scheme">https</string>
-    <string name="api_host">api-tracking-maps-travel-qulbs.c9users.io</string>
+    <string name="api_scheme">http</string>
+    <string name="api_host">trackingtravel.000webhostapp.com</string>
     <string name="api_segment">index.php</string>
 
 

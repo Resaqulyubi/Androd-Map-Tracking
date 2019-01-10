@@ -180,7 +180,7 @@ public class OutBoxService extends Service {
                                         if (outboxDB.getMethod().equals(OutboxDB.FLAG_METHOD_POST)) {
                                             executeOutBoxHandler.post(executeOutBoxHandler.new PostRunnable(outboxDB));
                                         } else if (outboxDB.getMethod().equals(OutboxDB.FLAG_METHOD_PUT)) {
-                                            executeOutBoxHandler.post(executeOutBoxHandler.new PutRunnable(outboxDB));
+                                                executeOutBoxHandler.post(executeOutBoxHandler.new PutRunnable(outboxDB));
                                         }
                                     }
                                 }

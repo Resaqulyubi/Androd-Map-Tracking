@@ -37,9 +37,9 @@ public class MapFragmentView {
 
     public MapFragmentView(AppCompatActivity activity,String from) {
 
+        this.fromactivity=from;
         m_activity = activity;
         initMapFragment();
-        fromactivity=from;
     }
 
     private SupportMapFragment getMapFragment() {
@@ -63,9 +63,10 @@ public class MapFragmentView {
 
                         getDataRoute();
                         if (dataRoute.size()>0){
-                            if (Util.parseDouble(dataRoute.get(0).getLat())!=0&&Util.parseDouble(dataRoute.get(0).getLongi())!=0){
-                                m_map.setCenter(new GeoCoordinate(Util.parseDouble(dataRoute.get(0).getLat()),  Util.parseDouble(dataRoute.get(0).getLongi()), 0.0), Map.Animation.BOW);      // Set the zoom level to the average between min and max
-                                m_map.setZoomLevel((m_map.getMaxZoomLevel() + m_map.getMinZoomLevel()) / 1);
+                            if (Util.parseDouble(dataRoute.get(dataRoute.size()-1).getLat())!=0&&Util.parseDouble(dataRoute.get(dataRoute.size()-1).getLongi())!=0){
+                                m_map.setCenter(new GeoCoordinate(Util.parseDouble(dataRoute.get(dataRoute.size()-1).getLat()),  Util.parseDouble(dataRoute.get(dataRoute.size()-1).getLongi()), 0.0), Map.Animation.NONE);      // Set the zoom level to the average between min and max
+                                m_map.setZoomLevel((m_map.getMaxZoomLevel() + m_map.getMinZoomLevel()) / 1.5);
+//                                m_map.setZoomLevel((m_map.getMaxZoomLevel() + m_map.getMinZoomLevel()) / 1);
                                 initCreatePolylineButton();
                             }
                         }
@@ -144,7 +145,7 @@ public class MapFragmentView {
 //        m_polyline = new MapPolyline(geoPolyline);
 
             m_polyline.setLineColor(Color.BLUE);
-            m_polyline.setLineWidth(11);
+            m_polyline.setLineWidth(8);
             // add GeoPolyline to current active map
             m_map.addMapObject(m_polyline);
         }
@@ -165,6 +166,8 @@ public class MapFragmentView {
 
             }
         }else if (fromactivity.equals("scheduledetail")){
+            ScheduleDetailActivity main = (ScheduleDetailActivity) FragmentActivity ;
+            dataRoute = main.getDataScheduleRoute();
 
         }
     }

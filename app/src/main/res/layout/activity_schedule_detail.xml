@@ -89,16 +89,35 @@
             android:orientation="vertical"
             >
 
+            <RelativeLayout
+                android:id="@+id/rlly_driver_positioning"
+                android:layout_width="wrap_content"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:background="#40000000">
+
+                <TextView
+                    android:id="@+id/textViewLocationInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Base.TextAppearance.AppCompat.Large"
+                    android:text="Waiting for position fix.."
+                    android:padding="3dp"/>
+            </RelativeLayout>
 
 
 
-            <fragment
+                <fragment
 
-                android:layout_below="@+id/tv_jalan"
-                class="com.here.android.mpa.mapping.SupportMapFragment"
-                android:id="@+id/mapfragment"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/mapFragment_height"/>
+                    android:layout_below="@+id/tv_jalan"
+                    class="com.here.android.mpa.mapping.SupportMapFragment"
+                    android:id="@+id/mapfragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/mapFragment_height"/>
+
+
+
+
 
             <TextView
                 android:layout_width="match_parent"

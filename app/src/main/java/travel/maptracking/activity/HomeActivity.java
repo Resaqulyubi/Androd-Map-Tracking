@@ -42,13 +42,22 @@ public class HomeActivity extends AppCompatActivity {
 
         card_admin_schedule.setOnClickListener(View ->{
             Intent i = new Intent(HomeActivity.this, ScheduleActivity.class)
-                    .putExtra("akses","admin");
+                    .putExtra("akses","admin")
+            .putExtra("menu","admin-schedule");
             startActivity(i);
         });
 
         card_driver_schedule.setOnClickListener(view -> {
             Intent i = new Intent(HomeActivity.this, ScheduleActivity.class)
-                    .putExtra("akses","driver");
+                    .putExtra("akses","driver")
+                .putExtra("menu","driver-schedule");
+            startActivity(i);
+        });
+
+        card_admin_tracking.setOnClickListener(view -> {
+            Intent i = new Intent(HomeActivity.this, ScheduleActivity.class)
+                    .putExtra("akses","admin")
+                    .putExtra("menu","admin-trackingdriver");
             startActivity(i);
         });
 

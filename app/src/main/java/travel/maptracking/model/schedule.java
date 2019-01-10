@@ -35,14 +35,12 @@ public class schedule {
         return this;
     }
 
-    public class Data {
-        private String id_driver ="";
+    public static class Data {
         private String id ="";
+        private String id_driver ="";
         private String id_customer ="";
         private String customer_name ="";
-
         private String email="";
-
         private String phone="";
         private String address ="";
         private String payment_code="";
@@ -55,6 +53,7 @@ public class schedule {
         private String createby="";
         private String createdate="";
         private String status="";
+
 
 
         public String getPhone() {

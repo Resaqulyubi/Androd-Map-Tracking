@@ -6,4 +6,11 @@
         android:orderInCategory="100"
         android:title="Refresh"
         app:showAsAction="never" />
+
+    <item
+        android:visible="false"
+        android:id="@+id/action_refresh_map"
+        android:orderInCategory="100"
+        android:title="Refresh Map"
+        app:showAsAction="never" />
 </menu>

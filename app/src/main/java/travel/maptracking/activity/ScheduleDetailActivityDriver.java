@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,55 +18,62 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.LocationDataSourceHERE;
+import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.PositioningManager;
+import com.here.android.mpa.mapping.Map;
+import com.here.android.mpa.mapping.MapState;
+import com.here.android.mpa.mapping.SupportMapFragment;
+import com.here.android.mpa.search.ErrorCode;
+import com.here.android.mpa.search.Location;
+import com.here.android.mpa.search.ResultListener;
+import com.here.android.mpa.search.ReverseGeocodeRequest2;
+import com.here.android.positioning.StatusListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Locale;
 
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Response;
 import travel.maptracking.R;
+import travel.maptracking.model.db.OutboxDB;
 import travel.maptracking.model.schedule;
-import travel.maptracking.model.scheduleRoute;
 import travel.maptracking.model.user;
 import travel.maptracking.network.Api;
 import travel.maptracking.util.BaseAppCompatActivity;
 import travel.maptracking.util.Constant;
 import travel.maptracking.util.Util;
 
-public class ScheduleDetailActivity extends BaseAppCompatActivity {
+public class ScheduleDetailActivityDriver extends BaseAppCompatActivity implements Map.OnTransformListener, PositioningManager.OnPositionChangedListener {
     private android.support.v7.widget.Toolbar toolbar;
-    private ScheduleDetailActivity obj;
+    private ScheduleDetailActivityDriver obj;
     TextView tv_driver_id,tv_driver_name,tv_driver_phone,tv_driver_email,tv_driver_car,tv_driver_police_number;
     TextView tv_admin_id,tv_admin_name,tv_admin_email,tv_admin_phone,tv_admin_office;
     Spinner sp_status;
     user.Data dataDriver =new user().getDataItem();
     schedule.Data dataSchedule;
     String hakAkses="";
-    List<scheduleRoute.Data> dataScheduleRoute=new ArrayList<>();
+    Double latitudeOld = 0d;
+    Double longitudeOld = 0d;
+    Double altitudeOld = 0d;
 
-    public List<scheduleRoute.Data> getDataScheduleRoute() {
-        return dataScheduleRoute;
-    }
-
-    public void setDataScheduleRoute(List<scheduleRoute.Data> dataScheduleRoute) {
-        this.dataScheduleRoute = dataScheduleRoute;
-    }
     //map
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
     private static final String[] RUNTIME_PERMISSIONS = {
@@ -80,6 +86,13 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
     private MapFragmentView m_mapFragmentView;
 
     //gps
+
+
+    // map embedded in the map fragment
+    private Map map;
+
+    // map fragment embedded in this activity
+    private SupportMapFragment mapFragment;
 
 
     // positioning manager instance
@@ -127,7 +140,7 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         hakAkses=  Util.getSharedPreferenceString(this, Constant.PREFS_IS_USER_AKSES,"");
 
         if (hasPermissions(this, RUNTIME_PERMISSIONS)) {
-            setupMapFragmentView();
+            initializeMapsAndPositioning();
         } else {
             ActivityCompat
                     .requestPermissions(this, RUNTIME_PERMISSIONS, REQUEST_CODE_ASK_PERMISSIONS);
@@ -270,7 +283,7 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         btn_message.setOnClickListener(view -> {
             if (!dataDriver.getNama().isEmpty()){
                 String phone =dataDriver.getPhone();
-                Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
+                Intent smsIntent = new Intent(Intent.ACTION_VIEW);
                 smsIntent.setType("vnd.android-dir/mms-sms");
                 smsIntent.putExtra("address", phone);
                 smsIntent.putExtra("sms_body", "");
@@ -324,18 +337,14 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         }else {
             getRecordUser(dataSchedule.getCreateby());
         }
-        getRecordRouting(dataSchedule.getId());
 
 
-
+        super.executeOutbox();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_refresh, menu);
-
-        menu.findItem(R.id.action_refresh_map).setVisible(true);
-
         return true;
     }
 
@@ -349,8 +358,6 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
                 getRecordUser(dataSchedule.getCreateby());
             }
             return true;
-        }else if (id==R.id.action_refresh_map){
-            getRecordRouting(dataSchedule.getId());
         }
         return super.onOptionsItemSelected(item);
     }
@@ -360,7 +367,7 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         new AsyncTask<Void, Void, Boolean>() {
             Date dStart = null;
             Date dEnd = null;
-            ProgressDialog dialog =new ProgressDialog(ScheduleDetailActivity.this);
+            ProgressDialog dialog =new ProgressDialog(ScheduleDetailActivityDriver.this);
 
             @Override
             protected void onPreExecute() {
@@ -389,7 +396,7 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
                 SimpleDateFormat ft = new SimpleDateFormat (Constant.default_simpledate2);
 
 
-                try (Response response = new Api(ScheduleDetailActivity.this).
+                try (Response response = new Api(ScheduleDetailActivityDriver.this).
                         get(getString(R.string.api_user),httpUrlBuilder)) {
                     if (response == null || !response.isSuccessful())
                         throw new IOException("Unexpected code = " + response);
@@ -460,7 +467,7 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
 
 
     private static boolean hasPermissions(Context context, String... permissions) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissions != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissions != null) {
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission)
                         != PackageManager.PERMISSION_GRANTED) {
@@ -488,10 +495,10 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
                             Toast.makeText(this, "Required permission " + permissions[index]
                                             + " not granted. "
                                             + "Please go to settings and turn on for sample app",
-                                    Toast.LENGTH_LONG).show();
+                                    Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(this, "Required permission " + permissions[index]
-                                    + " not granted", Toast.LENGTH_LONG).show();
+                                    + " not granted", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -517,7 +524,7 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
         boolean[] a = {false};
         new AsyncTask<Void, Void, Boolean>() {
 
-            ProgressDialog dialog =new ProgressDialog(ScheduleDetailActivity.this);
+            ProgressDialog dialog =new ProgressDialog(ScheduleDetailActivityDriver.this);
 
             @Override
             protected void onPreExecute() {
@@ -539,7 +546,7 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
                         .add("id", id.trim())
                         .add("status", status)
                         .add("action", "PUTSTATUS");
-                try (Response response = new Api(ScheduleDetailActivity.this).
+                try (Response response = new Api(ScheduleDetailActivityDriver.this).
                         post(getString(R.string.api_schedule),formBody)) {
 
                     if (response == null || !response.isSuccessful())
@@ -552,6 +559,9 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
                         obj.runOnUiThread(new Runnable() {
 
                             public void run() {
+
+                                dataSchedule.setStatus(status);
+
                                 Toast.makeText(obj, "Berhasil diupdate", Toast.LENGTH_SHORT).show();
 //                                getRecordSchedule();
                                 if (dialog!=null&dialog.isShowing()){
@@ -609,96 +619,257 @@ public class ScheduleDetailActivity extends BaseAppCompatActivity {
 
     }
 
+    private SupportMapFragment getMapFragment() {
+        return (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapfragment);
+    }
 
-    public boolean getRecordRouting(String id) {
-        boolean[] a = {false};
-        new AsyncTask<Void, Void, Boolean>() {
-            Date dStart = null;
-            Date dEnd = null;
-            ProgressDialog dialog =new ProgressDialog(ScheduleDetailActivity.this);
+    /**
+     * Initializes HERE Maps and HERE Positioning. Called after permission check.
+     */
+    private void initializeMapsAndPositioning() {
+        RelativeLayout rlly_driver_positioning= findViewById(R.id.rlly_driver_positioning);
+        rlly_driver_positioning.setVisibility(View.VISIBLE);
+        mLocationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
+        mapFragment = getMapFragment();
+        mapFragment.setRetainInstance(false);
 
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                dialog.setMessage("Loading get tracking...");
-                dialog.setCancelable(false);
-                obj.runOnUiThread(new Runnable() {
-                    public void run() {
-                        dialog.show();
-                    }
-                });
-                dStart = new Date();
-                dEnd = new Date();
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(getApplicationContext().getExternalFilesDir(null) + File.separator + ".here-maps", "map_intent"); /* ATTENTION! Do not forget to update {YOUR_INTENT_NAME} */
+        if (!success) {
+            // Setting the isolated disk cache was not successful, please check if the path is valid and
+            // ensure that it does not match the default location
+            // (getExternalStorageDirectory()/.here-maps).
+            // Also, ensure the provided intent name does not match the default intent name.
+        } else {
+            mapFragment.init(new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
+                    if (error == OnEngineInitListener.Error.NONE) {
+                        map = mapFragment.getMap();
+                        map.setZoomLevel(map.getMaxZoomLevel() - 1.7);
+                        map.addTransformListener(ScheduleDetailActivityDriver.this);
+                        mPositioningManager = PositioningManager.getInstance();
+                        mHereLocation = LocationDataSourceHERE.getInstance(
+                                new StatusListener() {
+                                    @Override
+                                    public void onOfflineModeChanged(boolean offline) {
+                                        // called when offline mode changes
+                                    }
 
-            }
+                                    @Override
+                                    public void onAirplaneModeEnabled() {
+                                        // called when airplane mode is enabled
+                                    }
 
-            @Override
-            protected Boolean doInBackground(Void... voids) {
-                boolean b=false;
+                                    @Override
+                                    public void onWifiScansDisabled() {
+                                        // called when Wi-Fi scans are disabled
+                                    }
 
+                                    @Override
+                                    public void onBluetoothDisabled() {
+                                        // called when Bluetooth is disabled
+                                    }
 
-                HttpUrl.Builder httpUrlBuilder = new HttpUrl.Builder();
+                                    @Override
+                                    public void onCellDisabled() {
+                                        // called when Cell radios are switch off
+                                    }
 
-                httpUrlBuilder.addQueryParameter("id_schedule",id);
+                                    @Override
+                                    public void onGnssLocationDisabled() {
+                                        // called when GPS positioning is disabled
+                                    }
 
-                SimpleDateFormat ft = new SimpleDateFormat (Constant.default_simpledate2);
+                                    @Override
+                                    public void onNetworkLocationDisabled() {
+                                        // called when network positioning is disabled
+                                    }
 
+                                    @Override
+                                    public void onServiceError(ServiceError serviceError) {
+                                        // called on HERE service error
+                                    }
 
-                try (Response response = new Api(ScheduleDetailActivity.this).
-                        get(getString(R.string.api_schedule_route),httpUrlBuilder)) {
-                    if (response == null || !response.isSuccessful())
-                        throw new IOException("Unexpected code = " + response);
+                                    @Override
+                                    public void onPositioningError(PositioningError positioningError) {
+                                        // called when positioning fails
+                                    }
 
-                    String responseBodyString = response.body().string();
-                    Gson gson = new Gson();
-                    scheduleRoute scheduleRoute = gson.fromJson(responseBodyString, scheduleRoute.class);
-
-                    if (scheduleRoute.isStatus() && scheduleRoute.getData().size() > 0) {
-                        dataScheduleRoute = scheduleRoute.getData();
-
-                        if (hasPermissions(ScheduleDetailActivity.this, RUNTIME_PERMISSIONS)) {
-                            setupMapFragmentView();
+                                    @Override
+                                    public void onWifiIndoorPositioningNotAvailable() {
+                                        // called when running on Android 9.0 (Pie) or newer
+                                    }
+                                });
+                        if (mHereLocation == null) {
+                            Toast.makeText(ScheduleDetailActivityDriver.this, "LocationDataSourceHERE.getInstance(): failed, exiting", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                        mPositioningManager.setDataSource(mHereLocation);
+                        mPositioningManager.addListener(new WeakReference<PositioningManager.OnPositionChangedListener>(
+                                ScheduleDetailActivityDriver.this));
+                        // start position updates, accepting GPS, network or indoor positions
+                        if (mPositioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR)) {
+                            mapFragment.getPositionIndicator().setVisible(true);
                         } else {
-                            ActivityCompat
-                                    .requestPermissions(ScheduleDetailActivity.this, RUNTIME_PERMISSIONS, REQUEST_CODE_ASK_PERMISSIONS);
+                            Toast.makeText(ScheduleDetailActivityDriver.this, "PositioningManager.start: failed, exiting", Toast.LENGTH_SHORT).show();
+                            finish();
                         }
-                    }else {
-                        obj.runOnUiThread(new Runnable() {
-                            public void run() {
-
-                                Toast.makeText(obj, "Tidak Ada dataRoute Routing", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                    } else {
+                        Toast.makeText(ScheduleDetailActivityDriver.this, "onEngineInitializationCompleted: error: " + error + ", exiting", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
-                } catch (IOException e) {
-                    obj.runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(obj, "Tidak mendapat balasan dari server..", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    e.printStackTrace();
                 }
-                return  b;
+            });
+        }
+    }
+
+
+    @Override
+    public void onPositionUpdated(final PositioningManager.LocationMethod locationMethod, final GeoPosition geoPosition, final boolean mapMatched) {
+        final GeoCoordinate coordinate = geoPosition.getCoordinate();
+        if (mTransforming) {
+            mPendingUpdate = new Runnable() {
+                @Override
+                public void run() {
+                    onPositionUpdated(locationMethod, geoPosition, mapMatched);
+                }
+            };
+        } else {
+            map.setCenter(coordinate, Map.Animation.BOW);
+            updateLocationInfo(locationMethod, geoPosition);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mPositioningManager != null) {
+            mPositioningManager.stop();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mPositioningManager != null) {
+            mPositioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR);
+        }
+    }
+
+    @Override
+    public void onPositionFixChanged(PositioningManager.LocationMethod locationMethod, PositioningManager.LocationStatus locationStatus) {
+        // ignored
+    }
+
+    @Override
+    public void onMapTransformStart() {
+        mTransforming = true;
+    }
+
+    @Override
+    public void onMapTransformEnd(MapState mapState) {
+        mTransforming = false;
+        if (mPendingUpdate != null) {
+            mPendingUpdate.run();
+            mPendingUpdate = null;
+        }
+    }
+
+    private void updateLocationInfo(PositioningManager.LocationMethod locationMethod, GeoPosition geoPosition) {
+        if (mLocationInfo == null) {
+            return;
+        }
+        final StringBuffer sb = new StringBuffer();
+        final GeoCoordinate coord = geoPosition.getCoordinate();
+        sb.append("Type: ").append(String.format(Locale.US, "%s\n", locationMethod.name()));
+        sb.append("Coordinate:").append(String.format(Locale.US, "%.6f, %.6f\n", coord.getLatitude(), coord.getLongitude()));
+
+
+        if (latitudeOld !=0d&&longitudeOld!=0d){
+            double meter = Util.distance(latitudeOld, coord.getLatitude(), longitudeOld, coord.getLongitude(),altitudeOld,coord.getAltitude());
+
+            if (meter>15 &&
+                    !dataSchedule.getStatus().equals("waiting") &&
+                    !dataSchedule.getStatus().equals("arrive") &&
+                    !dataSchedule.getStatus().equals("problem")
+                    ){
+                FormBody.Builder formBody = new FormBody.Builder()
+                        .add("action", "POST")
+                        .add("id_schedule", dataSchedule.getId())
+                        .add("lat", String.valueOf(coord.getLatitude()))
+                        .add("longi", String.valueOf(coord.getLongitude()))
+                        .add("createdate", Util.getCurrentDate("yyyy-MM-dd HH:mm:ss"))
+                        .add("createby", Util.getSharedPreferenceString(this, Constant.PREFS_IS_USER_ID, "-1"));
+
+                OutboxDB outbox = new OutboxDB("gps post", getString(R.string.api_schedule_route), Api.requestBodyToString(formBody.build()), OutboxDB.FLAG_METHOD_POST, Util.getCurrentDate("yyyy-MM-dd HH:mm:ss"), "",
+                        OutboxDB.FLAG_INIT, Util.getSharedPreferenceString(this, Constant.PREFS_IS_USER_ID, "-1"));
+                outbox.save();
             }
 
-            @Override
-            protected void onPostExecute(Boolean aVoid) {
-                super.onPostExecute(aVoid);
-                obj.runOnUiThread(new Runnable() {
-                    public void run() {
-                        if (dialog!=null&dialog.isShowing()){
-                            dialog.dismiss();
-                        }
-                    }
-                });
+            super.executeOutbox();
+        }
 
-
+        latitudeOld = coord.getLatitude();
+        longitudeOld = coord.getLongitude();
+        altitudeOld = coord.getAltitude();
+        if (coord.getAltitude() != GeoCoordinate.UNKNOWN_ALTITUDE) {
+            sb.append("Altitude:").append(String.format(Locale.US, "%.2fm\n", coord.getAltitude()));
+        }
+        if (geoPosition.getHeading() != GeoPosition.UNKNOWN) {
+            sb.append("Heading:").append(String.format(Locale.US, "%.2f\n", geoPosition.getHeading()));
+        }
+        if (geoPosition.getSpeed() != GeoPosition.UNKNOWN) {
+            sb.append("Speed:").append(String.format(Locale.US, "%.2fm/s\n", geoPosition.getSpeed()));
+        }
+        if (geoPosition.getBuildingName() != null) {
+            sb.append("Building: ").append(geoPosition.getBuildingName());
+            if (geoPosition.getBuildingId() != null) {
+                sb.append(" (").append(geoPosition.getBuildingId()).append(")\n");
+            } else {
+                sb.append("\n");
             }
-        }.execute();
+        }
+        if (geoPosition.getFloorId() != null) {
+            sb.append("Floor: ").append(geoPosition.getFloorId()).append("\n");
+        }
 
 
-        return  a[0];
+
+
+        sb.deleteCharAt(sb.length() - 1);
+        mLocationInfo.setText(sb.toString());
+
+
+        //
+
+        triggerRevGeocodeRequest(coord);
 
     }
 
+
+    private void triggerRevGeocodeRequest(GeoCoordinate coordinate ) {
+//        m_resultTextView.setText("");
+        /* Create a ReverseGeocodeRequest object with a GeoCoordinate. */
+//        GeoCoordinate coordinate = new GeoCoordinate(49.25914, -123.00777);
+        ReverseGeocodeRequest2 revGecodeRequest = new ReverseGeocodeRequest2(coordinate);
+        revGecodeRequest.execute(new ResultListener<Location>() {
+            @Override
+            public void onCompleted(Location location, ErrorCode errorCode) {
+                if (errorCode == ErrorCode.NONE) {
+                    /*
+                     * From the location object, we retrieve the address and display to the screen.
+                     * Please refer to HERE Android SDK doc for other supported APIs.
+                     */
+
+                    Toast.makeText(ScheduleDetailActivityDriver.this, location.getAddress().getText(), Toast.LENGTH_SHORT).show();
+
+//                    updateTextView(location.getAddress().toString());
+                } else {
+                    Toast.makeText(ScheduleDetailActivityDriver.this, "not get location info", Toast.LENGTH_SHORT).show();
+
+//                    updateTextView("ERROR:RevGeocode Request returned error code:" + errorCode);
+                }
+            }
+        });
+    }
 }

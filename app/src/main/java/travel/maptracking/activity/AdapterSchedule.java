@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.ParseException;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import travel.maptracking.R;
 import travel.maptracking.model.schedule;
+import travel.maptracking.model.user;
 
 /**
  * Created by WINDOWS 10 on 14/09/2017.
@@ -34,6 +36,8 @@ public class AdapterSchedule extends BaseAdapter {
     private int lastFocussedPosition = -1;
     private onEditClickListener mClickListener = null;
     private Handler handler = new Handler();
+
+    List<user.Data > dataDriver =new ArrayList<>();
     public AdapterSchedule(Context mContext , onEditClickListener mClickListener) {
         this.mContext = mContext;
        this.mClickListener = mClickListener;
@@ -65,6 +69,7 @@ public class AdapterSchedule extends BaseAdapter {
         tv_jalan = v.findViewById(R.id.tv_jalan);
         tv_status = v.findViewById(R.id.tv_status);
         btn_view = v.findViewById(R.id.btn_view);
+       ImageView imgv_logo = v.findViewById(R.id.imgv_logo);
 
 
         tv_nomor.setText(String.valueOf(position+1));
@@ -76,6 +81,24 @@ public class AdapterSchedule extends BaseAdapter {
         tv_jalan.setText(data.getRoute());
         tv_status.setText(data.getStatus());
 
+
+        if (dataDriver.size()>0){
+
+            String driver_name="";
+
+            for (int i = 0; i < dataDriver.size(); i++) {
+                if (dataDriver.get(i).getId().equals(data.getId_driver())){
+                    driver_name= dataDriver.get(i).getNama();
+                    break;
+                }
+            }
+
+            tv_id.setText(driver_name+" ("+ data.getId_driver()+")");
+
+            imgv_logo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_account_box_black_24dp));
+
+
+        }
 
         btn_view.setOnClickListener(new View.OnClickListener() {
 
@@ -92,7 +115,7 @@ public class AdapterSchedule extends BaseAdapter {
 
     public void setList(List<schedule.Data> peralatanDBS){
         this.scheduleList = peralatanDBS;
-        notifyDataSetChanged();
+
     }
 
 
@@ -102,8 +125,13 @@ public class AdapterSchedule extends BaseAdapter {
     }
 
     public List<schedule.Data> getScheduleList(){
-        Log.d(TAG, "setList: "+ scheduleList.toString());
         return scheduleList;
+
+    }
+
+    public void setDataDriver(List<user.Data> dataDriver) {
+        this.dataDriver = dataDriver;
+
 
     }
 

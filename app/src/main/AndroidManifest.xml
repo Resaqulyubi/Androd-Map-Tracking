@@ -55,7 +55,7 @@
             android:value="maptrackingDB" />
         <meta-data
             android:name="VERSION"
-            android:value="1" />
+            android:value="2" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
@@ -80,6 +80,12 @@
                 <action android:name="map_intent" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".services.OutBoxService"
+            android:enabled="true"
+            android:stopWithTask="false"
+            android:exported="false" />
 
         <!--
           Embed the HERE Positioning Service.
@@ -112,6 +118,9 @@
             android:name=".activity.ScheduleAddDriverActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activity.TrackingDriverActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity android:name=".activity.ScheduleDetailActivityDriver"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

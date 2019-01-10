@@ -3,5 +3,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="tv_subtitle_size">30sp</dimen>
     <dimen name="marginTopScheduleForm">5dp</dimen>
-    <dimen name="mapFragment_height">200dp</dimen>
+    <dimen name="mapFragment_height">240dp</dimen>
 </resources>
